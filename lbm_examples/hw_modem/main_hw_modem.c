@@ -114,9 +114,14 @@ void main_hw_modem( void )
     SMTC_HAL_TRACE_INFO( "Modem is starting\n" );
     SMTC_HAL_TRACE_PRINTF( "Commit SHA1: %s\n", get_software_git_commit( ) );
     SMTC_HAL_TRACE_PRINTF( "Commit date: %s\n", get_software_git_date( ) );
-    SMTC_HAL_TRACE_PRINTF( "Build date: %s\n", get_software_build_date( ) );
+    SMTC_HAL_TRACE_PRINTF( "Build date: %s\n", get_software_build_date( ) );    
+
+    // indicate to host the modem is ready for a command
+    SMTC_HAL_TRACE_PRINTF( "\n");
+    SMTC_HAL_TRACE_PRINTF( "OK\n"); 
 
     uint32_t sleep_time_ms = 0;
+
     while( 1 )
     {
         // Check if a command is available
@@ -129,6 +134,7 @@ void main_hw_modem( void )
         // Modem process launch
         sleep_time_ms = smtc_modem_run_engine( );
 
+#if 0
         // Atomically check sleep conditions (no command available and low power is possible)
         hal_mcu_disable_irq( );
         if( ( hw_modem_is_a_cmd_available( ) == false ) && ( hw_modem_is_low_power_ok( ) == true ) &&
@@ -139,6 +145,9 @@ void main_hw_modem( void )
         }
         hal_watchdog_reload( );
         hal_mcu_enable_irq( );
+#endif
+
+        hal_watchdog_reload( );
     }
 }
 

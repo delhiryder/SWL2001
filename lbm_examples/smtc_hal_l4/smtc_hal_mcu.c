@@ -144,11 +144,12 @@ void hal_mcu_init( void )
     // Initialize Uart for debug traces
     trace_uart_init( );
 #endif
+#if 0
 #if defined( HW_MODEM_ENABLED )
     // Initialize Uart for hw commands
     hw_modem_uart_init( );
 #endif
-
+#endif
     // Initialize GPIOs
     mcu_gpio_init( );
 
@@ -425,8 +426,10 @@ static void lpm_mcu_deinit( void )
 {
     hal_spi_de_init( RADIO_SPI_ID );
 
+#if 0
 #if defined( HW_MODEM_ENABLED )
     hw_modem_uart_deinit( );
+#endif
 #endif
 #if( MODEM_HAL_DBG_TRACE == MODEM_HAL_FEATURE_ON )
     trace_uart_deinit( );
@@ -472,8 +475,10 @@ static void lpm_mcu_reinit( void )
 #if( MODEM_HAL_DBG_TRACE == MODEM_HAL_FEATURE_ON )
     trace_uart_init( );
 #endif
+#if 0
 #if defined( HW_MODEM_ENABLED )
     hw_modem_uart_init( );
+#endif
 #endif
 
     // Initialize SPI
