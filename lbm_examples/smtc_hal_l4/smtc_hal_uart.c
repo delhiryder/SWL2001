@@ -67,10 +67,17 @@
  * --- PRIVATE VARIABLES -------------------------------------------------------
  */
 
+#if 0
 static DMA_HandleTypeDef hdma_usart4_rx;
+#endif
+
+static DMA_HandleTypeDef hdma_usart2_rx;
 
 static UART_HandleTypeDef huart2;
+
+#if 0
 static UART_HandleTypeDef huart4;
+#endif
 
 /*
  * -----------------------------------------------------------------------------
@@ -82,6 +89,9 @@ static UART_HandleTypeDef huart4;
  * --- PUBLIC FUNCTIONS DEFINITION ---------------------------------------------
  */
 
+extern bool     hw_cmd_available;
+
+#if 0
 void hw_modem_uart_init( void )
 {
     __HAL_RCC_DMA2_CLK_ENABLE( );
@@ -108,15 +118,20 @@ void hw_modem_uart_deinit( void )
 {
     HAL_UART_DeInit( &huart4 );
 }
+#endif
 
 void trace_uart_init( void )
 {
+    __HAL_RCC_DMA1_CLK_ENABLE( );
+    HAL_NVIC_SetPriority( DMA1_Channel6_IRQn, 0, 0 );
+    HAL_NVIC_EnableIRQ( DMA1_Channel6_IRQn );
+
     huart2.Instance                    = USART2;
     huart2.Init.BaudRate               = 115200;
     huart2.Init.WordLength             = UART_WORDLENGTH_8B;
     huart2.Init.StopBits               = UART_STOPBITS_1;
     huart2.Init.Parity                 = UART_PARITY_NONE;
-    huart2.Init.Mode                   = UART_MODE_TX;
+    huart2.Init.Mode                   = UART_MODE_TX_RX;
     huart2.Init.HwFlowCtl              = UART_HWCONTROL_NONE;
     huart2.Init.OverSampling           = UART_OVERSAMPLING_16;
     huart2.Init.OneBitSampling         = UART_ONE_BIT_SAMPLE_DISABLE;
@@ -126,6 +141,18 @@ void trace_uart_init( void )
     {
         mcu_panic( );
     }
+
+#if 0
+    __HAL_UART_DISABLE(&huart2);
+
+    /* set match character to '\r', 0x0D */
+    huart2.Instance->CR2 |= 0x0D000010;
+
+    /* enable CM interrupt */
+    __HAL_UART_ENABLE_IT(&huart2, UART_IT_CM);
+
+    __HAL_UART_ENABLE(&huart2);
+#endif
 }
 
 void trace_uart_deinit( void )
@@ -133,6 +160,7 @@ void trace_uart_deinit( void )
     HAL_UART_DeInit( &huart2 );
 }
 
+#if 0
 void hw_modem_uart_dma_start_rx( uint8_t* buff, uint16_t size )
 {
     HAL_UART_DMAStop( &huart4 );
@@ -143,17 +171,32 @@ void hw_modem_uart_dma_stop_rx( void )
 {
     HAL_UART_DMAStop( &huart4 );
 }
+#endif
 
+void uart2_dma_start_rx( uint8_t* buff, uint16_t size )
+{
+    HAL_UART_DMAStop( &huart2 );
+    HAL_UART_Receive_DMA( &huart2, buff, size );
+}
+ 
+void uart2_dma_stop_rx( void )
+{
+    HAL_UART_DMAStop( &huart2);
+}
+
+#if 0
 void hw_modem_uart_tx( uint8_t* buff, uint8_t len )
 {
     HAL_UART_Transmit( &huart4, ( uint8_t* ) buff, len, 0xffffff );
 }
+#endif
 
 void trace_uart_tx( uint8_t* buff, uint8_t len )
 {
     HAL_UART_Transmit( &huart2, ( uint8_t* ) buff, len, 0xffffff );
 }
 
+#if 0
 void HAL_UART_MspInit( UART_HandleTypeDef* huart )
 {
     GPIO_InitTypeDef GPIO_InitStruct;
@@ -215,7 +258,46 @@ void HAL_UART_MspInit( UART_HandleTypeDef* huart )
         mcu_panic( );
     }
 }
+#endif
 
+void HAL_UART_MspInit( UART_HandleTypeDef* huart )
+{
+    GPIO_InitTypeDef GPIO_InitStruct;
+ 
+    __HAL_RCC_USART2_CLK_ENABLE( );
+
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+    GPIO_InitStruct.Pin       = ( 1 << ( DEBUG_UART_TX & 0x0F ) ) | ( 1 << ( DEBUG_UART_RX & 0x0F ) );
+    GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull      = GPIO_NOPULL;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
+
+    __HAL_RCC_GPIOA_CLK_ENABLE( );
+    HAL_GPIO_Init( GPIOA, &GPIO_InitStruct );
+
+    hdma_usart2_rx.Instance                 = DMA1_Channel6;
+    hdma_usart2_rx.Init.Request             = DMA_REQUEST_2;
+    hdma_usart2_rx.Init.Direction           = DMA_PERIPH_TO_MEMORY;
+    hdma_usart2_rx.Init.PeriphInc           = DMA_PINC_DISABLE;
+    hdma_usart2_rx.Init.MemInc              = DMA_MINC_ENABLE;
+    hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+    hdma_usart2_rx.Init.Mode                = DMA_NORMAL;
+    hdma_usart2_rx.Init.Priority            = DMA_PRIORITY_LOW;
+
+    if( HAL_DMA_Init( &hdma_usart2_rx ) != HAL_OK )
+    {
+        mcu_panic( );
+    }
+    __HAL_LINKDMA( huart, hdmarx, hdma_usart2_rx );
+
+#if 0
+    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART2_IRQn);
+#endif
+}
+
+#if 0
 void HAL_UART_MspDeInit( UART_HandleTypeDef* huart )
 {
     if( huart->Instance == UART4 )
@@ -241,10 +323,46 @@ void HAL_UART_MspDeInit( UART_HandleTypeDef* huart )
         HAL_GPIO_DeInit( gpio_port, ( 1 << ( DEBUG_UART_RX & 0x0F ) ) );
     }
 }
+#endif
 
+void HAL_UART_MspDeInit( UART_HandleTypeDef* huart )
+{
+
+    __HAL_RCC_USART2_CLK_DISABLE( );
+    HAL_GPIO_DeInit( GPIOA, ( 1 << ( DEBUG_UART_TX & 0x0F ) ) );
+    HAL_GPIO_DeInit( GPIOA, ( 1 << ( DEBUG_UART_RX & 0x0F ) ) );
+
+    HAL_DMA_DeInit( &hdma_usart2_rx );
+}
+
+#if 0
 void DMA2_Channel5_IRQHandler( void )
 {
     HAL_DMA_IRQHandler( &hdma_usart4_rx );
+}
+#endif
+
+void DMA1_Channel6_IRQHandler( void )
+{
+    HAL_DMA_IRQHandler( &hdma_usart2_rx );
+}
+
+#if 0
+void USART2_IRQHandler (void)
+{
+    __HAL_UART_CLEAR_IT(&huart2, UART_CLEAR_CMF);
+
+    HAL_UART_DMAStop( &huart2 );
+
+    SMTC_HAL_TRACE_PRINTF( "CR detected\n");
+
+    hw_cmd_available = true;
+}
+#endif
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    hw_cmd_available = true;
 }
 
 /*

@@ -79,29 +79,41 @@ typedef enum
 static uint8_t            modem_response_buff[HW_MODEM_RX_BUFF_MAX_LENGTH];
 static uint8_t            modem_received_buff[HW_MODEM_RX_BUFF_MAX_LENGTH];
 static uint8_t            response_length;
-static volatile bool      hw_cmd_available             = false;
+volatile bool             hw_cmd_available             = false;
 static volatile bool      is_hw_modem_ready_to_receive = true;
+
+#if 0
 static hal_gpio_irq_t     wakeup_line_irq              = { 0 };
+#endif
+
+#if 0
 static hw_modem_lp_mode_t lp_mode                      = HW_MODEM_LP_ENABLE;
+#endif
+
+static hw_modem_lp_mode_t lp_mode                      = HW_MODEM_LP_DISABLE;
 
 /*
  * -----------------------------------------------------------------------------
  * --- PRIVATE FUNCTIONS DECLARATION -------------------------------------------
  */
 
+#if 1
 /**
  * @brief prepare and start the reception of the command on a uart using a dma
  * @param [none]
  * @return [none]
  */
 void hw_modem_start_reception( void );
+#endif
 
+#if 0
 /**
  * @brief function that will be called every time the COMMAND line in asserted or de-asserted by the host
  * @param *context  unused context
  * @return none
  */
 void wakeup_line_irq_handler( void* context );
+#endif
 
 /**
  * @brief function that will be called by the soft modem engine each time an async event is available
@@ -121,6 +133,7 @@ void hw_modem_init( void )
     hal_gpio_init_out( HW_MODEM_EVENT_PIN, 0 );
     hal_gpio_init_out( HW_MODEM_BUSY_PIN, 1 );
 
+#if 0
     // init irq on COMMAND pin
     wakeup_line_irq.pin      = HW_MODEM_COMMAND_PIN;
     wakeup_line_irq.context  = NULL;
@@ -130,9 +143,12 @@ void hw_modem_init( void )
     memset( modem_response_buff, 0, HW_MODEM_RX_BUFF_MAX_LENGTH );
     hw_cmd_available             = false;
     is_hw_modem_ready_to_receive = true;
+#endif
 
     // init the soft modem
     smtc_modem_init( &hw_modem_event_handler );
+
+    hw_modem_start_reception();
 
 #if defined( PERF_TEST_ENABLED )
     SMTC_HAL_TRACE_WARNING( "HARDWARE MODEM RUNNING PERF TEST MODE\n" );
@@ -146,8 +162,14 @@ void hw_modem_start_reception( void )
     // during the receive process the hw modem cannot accept an other cmd, prevent it
     is_hw_modem_ready_to_receive = false;
 
+#if 0
     // receive on dma
     hw_modem_uart_dma_start_rx( modem_received_buff, HW_MODEM_RX_BUFF_MAX_LENGTH );
+#endif
+
+    // receive on dma
+    uart2_dma_start_rx( modem_received_buff, HW_MODEM_RX_BUFF_MAX_LENGTH );
+
 
     // indicate to bridge or host that the modem is ready to receive on uart
     hal_gpio_set_value( HW_MODEM_BUSY_PIN, 0 );
@@ -207,6 +229,9 @@ void hw_modem_process_cmd( void )
         is_hw_modem_ready_to_receive = true;
         hw_cmd_available             = false;
 
+        hw_modem_start_reception();
+        SMTC_HAL_TRACE_PRINTF( "OK\n");
+
         // set busy pin to indicate to bridge or host that the hw_modem answer will be soon sent
         hal_gpio_set_value( HW_MODEM_BUSY_PIN, 1 );
 
@@ -219,13 +244,19 @@ void hw_modem_process_cmd( void )
         }
         modem_response_buff[response_length + 2] = crc;
 
+#if 0
         hw_modem_uart_tx( modem_response_buff, response_length + 3 );
+#endif
+	trace_uart_tx( modem_response_buff, response_length + 3 );
     }
     else
     {
         // now the hw modem can accept new commands
         is_hw_modem_ready_to_receive = true;
         hw_cmd_available             = false;
+
+	hw_modem_start_reception();
+        SMTC_HAL_TRACE_PRINTF( "OK\n"); 
 
         // set busy pin to indicate to bridge or host that the hw_modem answer will be soon sent
         hal_gpio_set_value( HW_MODEM_BUSY_PIN, 1 );
@@ -260,6 +291,7 @@ bool hw_modem_is_low_power_ok( void )
  * --- PRIVATE FUNCTIONS DEFINITION --------------------------------------------
  */
 
+#if 0
 void wakeup_line_irq_handler( void* context )
 {
     if( ( hal_gpio_get_value( HW_MODEM_COMMAND_PIN ) == 0 ) && ( is_hw_modem_ready_to_receive == true ) )
@@ -278,6 +310,9 @@ void wakeup_line_irq_handler( void* context )
         // stop uart on dma reception
         hw_modem_uart_dma_stop_rx( );
 
+        // stop uart on dma reception
+        uart2_dma_stop_rx( );
+
         // inform that a command has arrived
         hw_cmd_available = true;
 
@@ -285,6 +320,7 @@ void wakeup_line_irq_handler( void* context )
         lp_mode = HW_MODEM_LP_DISABLE_ONCE;
     }
 }
+#endif
 
 void hw_modem_event_handler( void )
 {

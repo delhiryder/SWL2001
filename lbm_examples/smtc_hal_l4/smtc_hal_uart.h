@@ -66,16 +66,25 @@ extern "C" {
  * --- PUBLIC FUNCTIONS PROTOTYPES ---------------------------------------------
  */
 
+#if 0
 void hw_modem_uart_init( void );
+#endif
+  
 void trace_uart_init( void );
 
+#if 0
 void hw_modem_uart_deinit( void );
+#endif
+  
 void trace_uart_deinit( void );
 
+#if 0
 void hw_modem_uart_dma_start_rx( uint8_t* buff, uint16_t size );
 void hw_modem_uart_dma_stop_rx( void );
 
 void hw_modem_uart_tx( uint8_t* buff, uint8_t len );
+#endif
+  
 void trace_uart_tx( uint8_t* buff, uint8_t len );
 
 #ifdef __cplusplus
