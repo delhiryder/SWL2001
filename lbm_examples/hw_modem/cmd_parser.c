@@ -1201,8 +1201,23 @@ cmd_parse_status_t parse_cmd( cmd_input_t* cmd_input, cmd_response_t* cmd_output
             cmd_output->buffer[0] = modem_version.major;
             cmd_output->buffer[1] = modem_version.minor;
             cmd_output->buffer[2] = modem_version.patch;
+            cmd_output->length    = 3;
 
-            cmd_output->length = 3;
+
+#ifdef HW_MODEM_ENABLED
+            // Ensure that the build_identifier string fits into the buffer
+            char *build_date = get_software_build_date();
+            int build_date_length = strlen(build_date);
+            if (build_date_length < 200) {
+                strncpy(&cmd_output->buffer[3], build_date, build_date_length);
+                cmd_output->buffer[3 + build_date_length] = '\0'; // Ensure null-termination
+            } else {
+                // Handle the error case where build_identifier is too large for the buffer
+                // Simply ignore for now
+            }
+
+            cmd_output->length += build_date_length;
+#endif
         }
         break;
     }

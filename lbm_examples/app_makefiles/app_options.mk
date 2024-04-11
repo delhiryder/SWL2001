@@ -26,7 +26,7 @@ MODEM_APP ?= nc
 MODEM_APP_REGION ?= nc
 
 # Allow fuota (take more RAM, due to read_modify_write feature) and force lbm build with fuota
-ALLOW_FUOTA ?= no
+ALLOW_FUOTA ?= yes
 FUOTA_VERSION ?= 1
 
 # USE LBM Store and forward (take more RAM on STML4, due to read_modify_write feature)
