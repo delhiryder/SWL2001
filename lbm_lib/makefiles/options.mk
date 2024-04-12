@@ -55,7 +55,7 @@ MODEM_DEEP_TRACE ?= no
 
 # LoRaWAN regions: ALL to build all available regions, otherwise regions can be added with a comma separator (ex EU_868,US_915)
 # If radio target is sx128x WW_2G4 is forced 
-REGION ?= ALL
+REGION ?= US_915
 
 # Crypto management only for lr11xx targets (SOFT, LR11XX, LR11XX_WITH_CREDENTIALS )
 CRYPTO ?= SOFT
@@ -65,13 +65,13 @@ CRYPTO ?= SOFT
 #-----------------------------------------------------------------------------
 
 # class b feature
-LBM_CLASS_B ?= no
+LBM_CLASS_B ?= yes
 
 # class c feature
-LBM_CLASS_C ?= no
+LBM_CLASS_C ?= yes
 
 # Multicast feature (at leastclass B or class C shall be activated)
-LBM_MULTICAST ?= no
+LBM_MULTICAST ?= yes
 
 # CSMA Feature ( only usable for lr11xx and sx126x targets)
 LBM_CSMA ?= no
@@ -89,9 +89,9 @@ LBM_ALC_SYNC_VERSION ?= 1
 # Fuota feature (this will automatically enable class b, class c, multicast and ALCSync)
 LBM_FUOTA ?= yes
 LBM_FUOTA_VERSION ?= 1
-FUOTA_MAXIMUM_NB_OF_FRAGMENTS ?= nc
-FUOTA_MAXIMUM_SIZE_OF_FRAGMENTS ?= nc
-FUOTA_MAXIMUM_FRAG_REDUNDANCY ?= nc
+FUOTA_MAXIMUM_NB_OF_FRAGMENTS ?= 100
+FUOTA_MAXIMUM_SIZE_OF_FRAGMENTS ?= 100
+FUOTA_MAXIMUM_FRAG_REDUNDANCY ?= 100
 # In case FUOTA is allowed, allow the use of Firmware Management Package
 LBM_FUOTA_ENABLE_FMP ?= yes
 # In case FUOTA is allowed, llow the use of Multi-Package Access Package
