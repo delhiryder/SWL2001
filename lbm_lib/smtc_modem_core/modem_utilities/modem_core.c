@@ -357,8 +357,8 @@ uint8_t modem_get_status( uint8_t stack_id )
 {
     uint8_t modem_status = 0;
 
-    modem_status = ( smtc_modem_hal_crashlog_get_status( ) == true ) ? ( modem_status | SMTC_MODEM_STATUS_CRASH )
-                                                                     : ( modem_status & ~SMTC_MODEM_STATUS_CRASH );
+//    modem_status = ( smtc_modem_hal_crashlog_get_status( ) == true ) ? ( modem_status | SMTC_MODEM_STATUS_CRASH )
+//                                                                     : ( modem_status & ~SMTC_MODEM_STATUS_CRASH );
 
 #if defined( ADD_SMTC_CLOUD_DEVICE_MANAGEMENT )
     modem_status =

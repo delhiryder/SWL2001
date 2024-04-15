@@ -59,11 +59,12 @@ extern "C" {
  */
 #define USER_LORAWAN_DEVICE_EUI                        \
     {                                                  \
-        0x3a, 0x23, 0x82, 0xa0, 0x7b, 0x8b, 0xc3, 0xcc \
+                                                       \
+        0xeb, 0x08, 0x1c, 0xa2, 0x0a, 0x71, 0x68, 0xbc                                               \
     }
 #define USER_LORAWAN_JOIN_EUI                          \
     {                                                  \
-        0x3a, 0x23, 0x82, 0xa0, 0x7b, 0x8b, 0xc3, 0xcc \
+                0xeb, 0x08, 0x1c, 0xa2, 0x0a, 0x71, 0x68, 0xbc                                               \
     }
 #define USER_LORAWAN_GEN_APP_KEY                                                                       \
     {                                                                                                  \
@@ -71,7 +72,8 @@ extern "C" {
     }
 #define USER_LORAWAN_APP_KEY                                                                           \
     {                                                                                                  \
-        0x7B, 0x55, 0xE8, 0xB7, 0xA0, 0x2B, 0xAF, 0xFB, 0x66, 0x68, 0x62, 0x96, 0xEF, 0xF9, 0xCC, 0xBC                                                                                                   \
+                                                                                                       \
+    0x57, 0x46, 0x8E, 0x08, 0x8B, 0x42, 0x20, 0xB6, 0x9D, 0x62, 0xD7, 0xCF, 0xF4, 0x62, 0x39, 0xB8 \
     }
 
 /**
