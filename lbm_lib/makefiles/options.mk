@@ -87,7 +87,7 @@ LBM_ALC_SYNC ?= no
 LBM_ALC_SYNC_VERSION ?= 1
 
 # Fuota feature (this will automatically enable class b, class c, multicast and ALCSync)
-LBM_FUOTA ?= no
+LBM_FUOTA ?= yes
 LBM_FUOTA_VERSION ?= 1
 FUOTA_MAXIMUM_NB_OF_FRAGMENTS ?= 100
 FUOTA_MAXIMUM_SIZE_OF_FRAGMENTS ?= 100
