@@ -163,6 +163,12 @@ COMMON_C_DEFS += \
 	-DMODEM_EXAMPLE_REGION=${MODEM_APP_REGION}
 endif
 
+ifeq ($(MODEM_APP),PERIODICAL_UPLINK)
+BUILD_EPOCH := $(shell date +%s)
+COMMON_C_DEFS += \
+	-DBUILD_EPOCH=\"$(BUILD_EPOCH)\"
+endif
+
 ifeq ($(MODEM_APP),HW_MODEM)
 
 # git defines
@@ -172,6 +178,7 @@ GIT_COMMIT  := $(shell git rev-parse --verify HEAD)
 GIT_DATE    := $(firstword $(shell git --no-pager show --date=iso-strict --format="%ad" --name-only))
 BUILD_DATE  := $(shell date --iso=seconds)
 SHORT_DATE  := $(shell date +%Y-%m-%d-%H-%M)
+else
 
 # If working tree is dirty, append dirty flag
 ifneq ($(strip $(shell git status --porcelain 2>/dev/null)),)
@@ -185,6 +192,7 @@ COMMON_C_DEFS += \
 	-DGIT_COMMIT=\"$(GIT_COMMIT)\" \
 	-DGIT_DATE=\"$(GIT_DATE)\" \
 	-DBUILD_DATE=\"$(BUILD_DATE)\"
+	-DBUILD_EPOCH=\"$(BUILD_EPOCH)\"
 LBM_BUILD_OPTIONS += REGION=ALL LBM_STREAM=yes LBM_LFU=yes LBM_DEVICE_MANAGEMENT=yes LBM_CLASS_B=yes LBM_CLASS_C=yes LBM_MULTICAST=yes LBM_CSMA=yes
 ALLOW_FUOTA=yes
 

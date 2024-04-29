@@ -296,6 +296,7 @@ static void modem_event_callback( void )
     smtc_modem_event_t current_event;
     uint8_t            event_pending_count;
     uint8_t            stack_id = STACK_ID;
+    smtc_modem_class_b_ping_slot_periodicity_t class_b_periodicity;
 
     // Continue to read modem event until all event has been processed
     do
@@ -358,6 +359,24 @@ static void modem_event_callback( void )
 
         case SMTC_MODEM_EVENT_ALARM:
             SMTC_HAL_TRACE_INFO( "Event received: ALARM\n" );
+
+            // Get Class B Ping Slot
+            smtc_modem_class_b_get_ping_slot_periodicity( stack_id, &class_b_periodicity );
+
+            SMTC_HAL_TRACE_INFO( "Class B Ping Slot Periodicity is %u\n", class_b_periodicity );
+
+            class_b_periodicity = SMTC_MODEM_CLASS_B_PINGSLOT_1_S;
+
+            smtc_modem_class_b_set_ping_slot_periodicity( stack_id, class_b_periodicity);
+
+            smtc_modem_class_b_get_ping_slot_periodicity( stack_id, &class_b_periodicity );
+
+            SMTC_HAL_TRACE_INFO( "Class B Ping Slot Periodicity is %u\n", class_b_periodicity );
+
+            SMTC_HAL_TRACE_INFO( "Setting device to Class B\n");
+
+            ASSERT_SMTC_MODEM_RC( smtc_modem_set_class( stack_id, SMTC_MODEM_CLASS_B ) );
+
             // Send periodical uplink on port 101
             send_uplink_counter_on_port( 101 );
             // Restart periodical uplink alarm
@@ -405,7 +424,7 @@ static void modem_event_callback( void )
             break;
 
         case SMTC_MODEM_EVENT_CLASS_B_STATUS:
-            SMTC_HAL_TRACE_INFO( "Event received: CLASS_B_STATUS\n" );
+            SMTC_HAL_TRACE_INFO( "Event received: CLASS_B_STATUS: %u\n", current_event.event_data.class_b_status.status );
             break;
 
         case SMTC_MODEM_EVENT_LORAWAN_MAC_TIME:

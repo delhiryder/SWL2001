@@ -470,10 +470,32 @@ void smtc_modem_hal_print_trace( const char* fmt, ... )
 /* ------------ Fuota management ------------*/
 
 #if defined( USE_FUOTA )
+
+//#include <stdint.h>
+
+#ifndef BUILD_EPOCH
+#define BUILD_EPOCH 0
+#endif
+
+
+#define FIRMWARE_VERSION_MAJOR 0
+#define FIRMWARE_VERSION_MINOR 0
+#define FIRMWARE_VERSION_PATCH 9
+#define STRINGIFY( x ) #x
+#define TO_STRING( x ) STRINGIFY( x )
+#define BUILD_EPOCH_STR TO_STRING(BUILD_EPOCH)
+#define FIRMWARE_VERSION_JSON ("{\"version\": \"" TO_STRING(FIRMWARE_VERSION_MAJOR) "." \
+                                TO_STRING(FIRMWARE_VERSION_MINOR) "." \
+                                TO_STRING(FIRMWARE_VERSION_PATCH) "+"                   \
+                                BUILD_EPOCH  "\"}")
+
+
 uint32_t smtc_modem_hal_get_hw_version_for_fuota( void )
 {
-    // Example value, please fill with application value
-    return 0x12345678;
+    uint32_t hw_version = FIRMWARE_VERSION_MAJOR * 1000000 + FIRMWARE_VERSION_MINOR * 1000 + FIRMWARE_VERSION_PATCH;
+    SMTC_HAL_TRACE_INFO( "Version Json: %s\n", FIRMWARE_VERSION_JSON );
+    SMTC_HAL_TRACE_INFO( "HW version: %d\n", hw_version );
+    return hw_version;
 }
 
 /**
@@ -484,7 +506,8 @@ uint32_t smtc_modem_hal_get_hw_version_for_fuota( void )
 uint32_t smtc_modem_hal_get_fw_version_for_fuota( void )
 {
     // Example value, please fill with application value
-    return 0x11223344;
+    SMTC_HAL_TRACE_INFO( "Version Json: %s\n", FIRMWARE_VERSION_JSON );
+    return BUILD_EPOCH;
 }
 
 /**
