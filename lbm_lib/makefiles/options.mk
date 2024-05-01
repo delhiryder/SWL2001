@@ -89,7 +89,7 @@ LBM_ALC_SYNC_VERSION ?= 1
 # Fuota feature (this will automatically enable class b, class c, multicast and ALCSync)
 LBM_FUOTA ?= yes
 LBM_FUOTA_VERSION ?= 1
-FUOTA_MAXIMUM_NB_OF_FRAGMENTS ?= 100
+FUOTA_MAXIMUM_NB_OF_FRAGMENTS ?= 1000
 FUOTA_MAXIMUM_SIZE_OF_FRAGMENTS ?= 100
 FUOTA_MAXIMUM_FRAG_REDUNDANCY ?= 100
 # In case FUOTA is allowed, allow the use of Firmware Management Package
