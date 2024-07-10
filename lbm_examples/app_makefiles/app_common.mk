@@ -170,6 +170,9 @@ COMMON_C_DEFS += \
 endif
 
 ifeq ($(MODEM_APP),HW_MODEM)
+BUILD_EPOCH := $(shell date +%s)
+COMMON_C_DEFS += \
+	-DBUILD_EPOCH=\"$(BUILD_EPOCH)\"
 
 # git defines
 ifneq (, $(shell which git))
