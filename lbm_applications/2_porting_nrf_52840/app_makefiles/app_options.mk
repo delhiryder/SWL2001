@@ -22,7 +22,7 @@ MODEM_APP ?= nc
 
 # Allow fuota (take more RAM, due to read_modify_write feature) and force lbm build with fuota
 ALLOW_FUOTA ?= yes
-FUOTA_VERSION ?= 2
+FUOTA_VERSION ?= 1
 
 # USE LBM Store and forward (take more RAM on STML4, due to read_modify_write feature)
 ALLOW_STORE_AND_FORWARD ?= no
@@ -46,7 +46,7 @@ CRYPTO ?= SOFT
 LBM_NB_OF_STACK ?= 1
 
 # Add any lbm build options (ex: LBM_BUILD_OPTIONS ?= LBM_CLASS_B=yes REGION=ALL)
-LBM_BUILD_OPTIONS ?= REGION=ALL LBM_MULTICAST=yes LBM_CSMA=yes USE_CSMA_BY_DEFAULT=yes
+LBM_BUILD_OPTIONS ?= REGION=US_915 LBM_MULTICAST=yes LBM_CSMA=yes USE_CSMA_BY_DEFAULT=yes
 
 #-----------------------------------------------------------------------------
 # Optimization
